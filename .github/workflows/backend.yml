@@ -55,13 +55,16 @@ jobs:
       - name: composer install
         if: steps.cache.outputs.cache-hit != 'true'
         run: composer install
+        working-directory: src
 
       # Laravel Pint（コードスタイルチェック 自動整形はなし）
       - name: Run Laravel Pint
         run: vendor/bin/pint --test
+        working-directory: src
       
       #　Larastan（静的解析）
       - name: Run Larastan 
         run: vendor/bin/phpstan analyse --memory-limit=2G
+        working-directory: src
 
       # PHPUnitが必要な場合.envファイルのコピーとkey generateとmigration実行も必要
