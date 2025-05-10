@@ -19,7 +19,7 @@ export default function Login() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-8">
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">ログイン</h2>
+                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Laravel Study</h2>
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
                         <label className="block text-sm font-medium text-gray-700">メールアドレス</label>
@@ -49,7 +49,7 @@ export default function Login() {
                             type="checkbox"
                             checked={data.remember}
                             onChange={(e) => setData('remember', e.target.checked)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
                         <label htmlFor="remember" className="ml-2 block text-sm text-gray-700">
                             ログイン状態を保持

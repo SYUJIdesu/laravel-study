@@ -12,10 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('stripe_id')->nullable()->index();
-            $table->string('pm_type')->nullable();
-            $table->string('pm_last_four', 4)->nullable();
-            $table->timestamp('trial_ends_at')->nullable();
+            $table->string('stripe_id')->nullable()->index()
+                ->comment('Stripe 上の顧客ID（例: cus_XXXX）')->after('remember_token');
+
+            $table->string('pm_type')->nullable()
+                ->comment('登録された支払い方法の種類（例: card）')->after('stripe_id');
+
+            $table->string('pm_last_four', 4)->nullable()
+                ->comment('支払い方法（クレジットカードなど）の下4桁')->after('pm_type');
+
+            $table->timestamp('trial_ends_at')->nullable()
+                ->comment('全体的な無料トライアル終了日時（サブスクではなくユーザー単位）')->after('pm_last_four');
         });
     }
 

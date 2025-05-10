@@ -1,0 +1,67 @@
+name: Backend CI
+on:
+  # 手動イベントにする
+  # workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    # プルリク開いた時と、ソースブランチが更新された時
+    types: [opened, synchronize]
+
+jobs:
+  backend_ci:
+    name: Api PHP Lint Unit Test
+
+    # ランナー実行環境の構築
+    runs-on: ubuntu-latest
+
+    # ジョブに必要な追加のサービス (PHPUnitを導入するときに使う)
+    # services:
+    #   mysql:
+    #     image: mysql:8.0.26
+    #     env:
+    #       MYSQL_ROOT_PASSWORD: password
+    #       MYSQL_DATABASE: test
+    #     ports:
+    #       - 3306:3306
+    #     options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    
+    steps:
+
+      # コードをクローンしてランナー環境にコピー
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # PHPのセットアップ
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, simplexml, curl, fileinfo, tokenizer, dom, intl, pdo_mysql, zip, bcmath
+          coverage: none
+
+      # Composerのキャッシュを設定(composer install によってインストールされた依存関係をキャッシュして、ワークフローの実行速度を向上)
+      - name: Get Composer Cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          # 完全な一致がなくても、同じOSのキャッシュが部分的にリストアされることがあり、さらにパフォーマンスを改善
+          restore-keys: ${{ runner.os }}-composer-
+      
+      # キャッシュない場合composer install
+      - name: composer install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: composer install
+
+      # Laravel Pint（コードスタイルチェック 自動整形はなし）
+      - name: Run Laravel Pint
+        run: vendor/bin/pint --test
+      
+      #　Larastan（静的解析）
+      - name: Run Larastan 
+        run: vendor/bin/phpstan analyse --memory-limit=2G
+
+      # PHPUnitが必要な場合.envファイルのコピーとkey generateとmigration実行も必要

@@ -12,14 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('subscription_items', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('subscription_id');
-            $table->string('stripe_id')->unique();
-            $table->string('stripe_product');
-            $table->string('stripe_price');
-            $table->integer('quantity')->nullable();
+            $table->id()->comment('主キー');
+            $table->foreignId('subscription_id')->comment('紐づく subscriptions テーブルのID');
+            $table->string('stripe_id')->unique()->comment('Stripe 上のサブスクリプションアイテムID（例: si_XXXX）');
+            $table->string('stripe_product')->comment('Stripe 上のプロダクトID（例: prod_XXXX）');
+            $table->string('stripe_price')->comment('Stripe 上の価格ID（例: price_XXXX）');
+            $table->integer('quantity')->nullable()->comment('契約数（例: ライセンス数など、通常は1）');
             $table->timestamps();
-
             $table->index(['subscription_id', 'stripe_price']);
         });
     }
