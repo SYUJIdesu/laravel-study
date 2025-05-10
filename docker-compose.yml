@@ -1,0 +1,96 @@
+version: "3.9"
+
+services:
+  # php
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/api/Dockerfile
+    ports:
+      - 5173:5173
+    volumes:
+      - ./src/:/app
+      - ./docker/api/php.ini:/usr/local/etc/php/php.ini
+    env_file: .env
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+      APP_KEY: base64:6NyVWMe4EmpcZQNpzpd+qJRBkWyTxqTRHu3SsBqK5eE=
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: debug
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: database
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      LOG_SQL_ENABLE: true
+    networks:
+      - laravel12
+    depends_on:
+      - web
+      - db
+
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - ./src/:/app
+    networks:
+      - laravel12
+
+  # MySQL
+  db:
+    platform: linux/x86_64
+    image: mysql:8.0.26
+    build:
+      context: .
+      dockerfile: ./docker/db/Dockerfile
+    command: mysqld  --innodb_use_native_aio=0 --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_HOST: "%"
+      TZ: "Asia/Tokyo"
+    volumes:
+      - nishyama-mysql-volume:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - "-proot"
+      retries: 3
+      timeout: 5s
+    networks:
+      - laravel12
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOSTS=db
+      - PMA_USER=user
+      - PMA_PASSWORD=password
+    platform: linux/x86_64
+    ports:
+      - 4040:80
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./docker/phpmyadmin/sessions:/sessions
+    networks:
+      - laravel12
+networks:
+  laravel12:
+    driver: bridge
+volumes:
+  nishyama-mysql-volume:
+    driver: local

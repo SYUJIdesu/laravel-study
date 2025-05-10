@@ -1,0 +1,28 @@
+{
+  "name": "nishiyama-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "docker-compose up",
+    "stop": "docker-compose down",
+    "clearall": "docker-compose down -v",
+    "lint": "npm-run-all -s lint:format lint:analyze",
+    "lint:analyze": "docker-compose run api vendor/bin/phpstan analyse --memory-limit=2G",
+    "lint:format": "docker-compose run api vendor/bin/pint --test",
+    "lintfix": "npm-run-all -s lintfix:format lintfix:analyze",
+    "lintfix:analyze": "docker-compose run api vendor/bin/phpstan analyse --memory-limit=2G",
+    "lintfix:format": "docker-compose run api vendor/bin/pint -v",
+    "test": "docker-compose run api php artisan test",
+    "bash": "docker-compose run api bash",
+    "artisan": "docker-compose run api php artisan",
+    "composer": "docker-compose run api php composer",
+    "prettier": "prettier"
+  },
+  "devDependencies": {
+    "@prettier/plugin-php": "^0.19.6",
+    "autoprefixer": "^10.4.21",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.5.3",
+    "prettier": "^2.0.0",
+    "tailwindcss": "^4.1.6"
+  }
+}
