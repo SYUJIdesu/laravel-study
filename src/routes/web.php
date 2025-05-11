@@ -4,7 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SubscribeController;
-use App\Http\Controllers\UesrController;
+use App\Http\Controllers\UserController;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 // ログインルート
@@ -14,6 +15,10 @@ Route::get('/login', [AuthController::class, 'create'])
 
 Route::post('/login', [AuthController::class, 'store'])
     ->middleware('guest');
+
+// サブスクリプションのWebhook
+Route::post('/subscribe/webhook', [SubscribeController::class, 'webhook'])->name('subscribe.webhook')
+    ->withoutMiddleware(ValidateCsrfToken::class);
 
 // 認証が必要なルート
 Route::middleware('auth')->group(function () {
@@ -32,9 +37,9 @@ Route::middleware('auth')->group(function () {
     // サブスク
     Route::post('/subscribe', [SubscribeController::class, 'checkout'])->name('subscribe.checkout');
     Route::get('/subscribe/comp', [SubscribeController::class, 'comp'])->name('subscribe.comp');
-    Route::post('/subscribe/webhook', [SubscribeController::class, 'webhook'])->name('subscribe.webhook');
+    Route::get('/subscribe/customer_portal', [SubscribeController::class, 'customerPortal'])->name('subscribe.customer_portal');
 
     // ユーザー画面
-    Route::get('/user', [UesrController::class, 'show'])->name('show');
+    Route::get('/user/show', [UserController::class, 'show'])->name('show');
 
 });

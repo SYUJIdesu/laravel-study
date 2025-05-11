@@ -2,7 +2,7 @@ import { PageProps } from '@/types';
 import { usePage, router } from '@inertiajs/react';
 import MainLayout from '@/Layouts/MainLayout';
 
-type Plan = App.Data.PlanWithPlansData; // ✅ 入れ子構造
+type Plan = App.Data.PlanWithPlansData;
 
 const PlansIndex = () => {
     const { plans } = usePage<PageProps & { plans: Plan[] }>().props;
@@ -11,8 +11,8 @@ const PlansIndex = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         {plans.map((product) => (
             <div
-            key={product.plan_id}
-            className="border rounded shadow p-4 bg-white hover:shadow-lg transition"
+                key={product.plan_id}
+                className="border rounded shadow p-4 bg-white hover:shadow-lg transition"
             >
             <h2 className="text-xl font-bold mb-2">{product.name}</h2>
             <p className="text-gray-600 mb-4">{product.description}</p>

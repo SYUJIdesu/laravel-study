@@ -23,7 +23,7 @@ class StripePlanRepository
     public function getActivePlans(): array
     {
         $products = Product::all(['active' => true]);
-        $productDtos = [];
+        $planWithPlansData = [];
 
         foreach ($products->data as $product) {
             $prices = Price::all([
@@ -40,7 +40,7 @@ class StripePlanRepository
                 );
             })->all();
 
-            $productDtos[] = new PlanWithPlansData(
+            $planWithPlansData[] = new PlanWithPlansData(
                 $product->id,
                 $product->name,
                 $product->description,
@@ -48,6 +48,6 @@ class StripePlanRepository
             );
         }
 
-        return $productDtos;
+        return $planWithPlansData;
     }
 }

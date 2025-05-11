@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->report(function (\Throwable $e) {
             app(\App\Exceptions\LogExceptionHandler::class)->__invoke($e, request());
+
             return false; // 標準のログ記録を防ぐ
         });
     })->create();

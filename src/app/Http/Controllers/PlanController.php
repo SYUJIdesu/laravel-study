@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\Stripe\PlanService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PlanController extends Controller
@@ -11,7 +12,7 @@ class PlanController extends Controller
         protected PlanService $service
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
         $plans = $this->service->getPlans();
 
