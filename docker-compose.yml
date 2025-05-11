@@ -16,21 +16,27 @@ services:
       APP_ENV: local
       APP_DEBUG: true
       APP_KEY: base64:6NyVWMe4EmpcZQNpzpd+qJRBkWyTxqTRHu3SsBqK5eE=
-      LOG_CHANNEL: stderr
-      LOG_LEVEL: debug
       DB_CONNECTION: mysql
       DB_HOST: db
       DB_PORT: 3306
       DB_DATABASE: database
       DB_USERNAME: root
       DB_PASSWORD: password
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_USERNAME:
+      MAIL_PASSWORD:
+      MAIL_ENCRYPTION:
+      MAIL_FROM_ADDRESS: "nishiyama@nishiyama.com"
+      MAIL_FROM_NAME: "nishiyama local"
       LOG_SQL_ENABLE: true
     networks:
       - laravel12
     depends_on:
-      - web
       - db
+      - mailpit
 
+  # Nginx
   web:
     build:
       context: .
@@ -41,6 +47,8 @@ services:
       - ./src/:/app
     networks:
       - laravel12
+    depends_on:
+      - api
 
   # MySQL
   db:
@@ -71,23 +79,16 @@ services:
       timeout: 5s
     networks:
       - laravel12
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment:
-      - PMA_ARBITRARY=1
-      - PMA_HOSTS=db
-      - PMA_USER=user
-      - PMA_PASSWORD=password
-    platform: linux/x86_64
+  
+  # Mailpit
+  mailpit:
+    image: axllent/mailpit:latest
     ports:
-      - 4040:80
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ./docker/phpmyadmin/sessions:/sessions
+      - 1025:1025
+      - 8025:8025
     networks:
       - laravel12
+
 networks:
   laravel12:
     driver: bridge
