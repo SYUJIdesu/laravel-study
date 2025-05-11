@@ -15,9 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
-
-        $middleware->append(App\Http\Middleware\HandleInertiaRequests::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->report(function (\Throwable $e) {
+            app(\App\Exceptions\LogExceptionHandler::class)->__invoke($e, request());
+            return false; // 標準のログ記録を防ぐ
+        });
     })->create();
